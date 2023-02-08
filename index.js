@@ -4,6 +4,8 @@ const server = express();
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
 
 // ******************** MiddleWare ****************************
 server.use(express.static(process.env.STATIC_FOLDER));
@@ -57,6 +59,14 @@ server.post("/person", (req, res) => {
   let age = req.body.age;
   res.json({name, age});
 });
+
+
+server.post("/login",
+  passport.authenticate('local'),
+  function(req, res)  {
+    res.redirect('/');
+  }
+);
 
 
 server.listen(process.env.PORT, () => {
