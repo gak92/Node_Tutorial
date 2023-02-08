@@ -3,6 +3,7 @@ const express = require("express");
 const server = express();
 const bodyParser = require("body-parser");
 const logger = require("morgan");
+const session = require("express-session");
 
 // ******************** MiddleWare ****************************
 server.use(express.static(process.env.STATIC_FOLDER));
@@ -13,12 +14,24 @@ server.use((req, res, next) => {
 server.use(logger());
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded());
+server.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false, maxAge: 60000 }
+}));
 
-
+// =============================================================
 // GET - localhost:8080/homepage
 server.get("/homepage", (request, response) => {
   // response.send("<h1>Hello</h1>");
   response.json({"name": "Ali"});
+});
+
+// Testing session
+server.get("/test", (req, res) => {
+  req.session.test ? req.session.test++ : req.session.test = 1;
+  res.send(req.session.test.toString());
 });
 
 
@@ -47,5 +60,5 @@ server.post("/person", (req, res) => {
 
 
 server.listen(process.env.PORT, () => {
-  console.log("Server Started... http://localhost:"+process.env.PORT);
+  console.log("Server Started at: http://localhost:"+process.env.PORT);
 });
