@@ -23,6 +23,20 @@ server.use(session({
   cookie: { secure: false, maxAge: 60000 }
 }));
 
+server.use(passport.initialize());
+server.use(passport.session());
+
+passport.use(new LocalStrategy( 
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (!user.verifyPassword(password)) { return done(null, false); }
+      return done(null, user);
+    });
+  }
+));
+
 // =============================================================
 // GET - localhost:8080/homepage
 server.get("/homepage", (request, response) => {
